@@ -13,34 +13,24 @@
     <!-- https://teachablemachine.withgoogle.com/models/fgxQHUQ3z/-->
     <div class="title">The Recycle Disciple</div>
 
-    <div class="loader" id="loader"></div> 
+<!--
+<div class="loader" id="loader"></div> 
+<button type="button" onclick="init()">Start</button>
+<div id="webcam-container"></div>
+<div id="label-container"></div>
+<p id="text" style="text-align:center;">-->
 
-    <!-- Start button loads the model, sets up the webcam, and begins predictions -->
-    <button type="button" onclick="init()">Start</button>
-    <!-- Toggle Camera button switches between front and back cameras -->
-    <button type="button" onclick="toggleCamera()">Toggle Camera</button>
+    
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<!--<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-    <div id="webcam-container"></div>
-    <div id="label-container"></div>
-    <p id="text" style="text-align:center;"></p>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-
-    <script type="text/javascript">
-      // URL of the Teachable Machine model
-      const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/";
-
-      // Feedback messages for each prediction class
-      var feedback = [
-        "PET 1 - Can be recycled at curbside or your local recycling center",
-        "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.",
-        "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
-        "LDPE 4 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
-        "PP 5 - These are generaly recyclable.",
-        "PS 6 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
-        "Other 7 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center."
-      ];
+    // the link to your model provided by Teachable Machine export panel
+    //const URL = "https://teachablemachine.withgoogle.com/models/fgxQHUQ3z/";
+    const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/"
+    const feedback = ["PET 1 - Can be recycled at curbside or your local recycling center", "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.", "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "LDPE 4 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "PP 5 - These are generaly recyclable.", "PS 6 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "Other 7 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center."]
 
       let model, webcam, labelContainer, maxPredictions;
 
@@ -105,66 +95,99 @@
       // Run the webcam image through the model for prediction.
       async function predict() {
         const prediction = await model.predict(webcam.canvas);
-        // (Optional) You can update your labelContainer here with class names and probabilities.
-        // For example:
-        // for (let i = 0; i < maxPredictions; i++) {
-        //   labelContainer.childNodes[i].innerHTML = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-        // }
-
-        // Build an array of probabilities (formatted to two decimal places).
-        var probabilities = [];
-        for (let i = 0; i < 7; i++) {
-          probabilities.push(prediction[i].probability.toFixed(2));
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                //prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                prediction[i].probability.toFixed(2)
+            // labelContainer.childNodes[i].innerHTML = classPrediction;
         }
+          //if (prediction[0].probability.toFixed(2) > prediction[1].probability.toFixed(2)) {
+             //document.getElementById("text").innerHTML ="PET 1 - Can be recycled at curbside or your local recycling center";
+               // } else {
+                    //document.getElementById("text").innerHTML = "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.";
+          //}
+        document.getElementById("text").innerHTML = feedback[indexOfMax(classPrediction)]
+    }
 
-        // Determine which prediction has the highest probability.
-        var max = indexOfMax(probabilities);
-        // Display the corresponding feedback message.
-        if (max === 0) {
-          document.getElementById("text").innerHTML = feedback[0];
-        } else if (max === 1) {
-          document.getElementById("text").innerHTML = feedback[1];
-        } else if (max === 2) {
-          document.getElementById("text").innerHTML = feedback[2];
-        } else if (max === 3) {
-          document.getElementById("text").innerHTML = feedback[3];
-        } else if (max === 4) {
-          document.getElementById("text").innerHTML = feedback[4];
-        } else if (max === 5) {
-          document.getElementById("text").innerHTML = feedback[5];
-        } else if (max === 6) {
-          document.getElementById("text").innerHTML = feedback[6];
-        }
-      }
+</script>-->
+<div class="loader" id="loader"></div> 
+<button type="button" onclick="init()">Start</button>
+<div id="webcam-container"></div>
+<div id="label-container"></div>
+<p id="text" style="text-align:center;">
 
-      // Toggle the camera from front ("user") to back ("environment") or vice versa.
-      async function toggleCamera() {
-        // Toggle facing mode.
-        currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
 
-        // Stop the current webcam stream.
-        if (webcam && webcam.stop) {
-          webcam.stop();
-        }
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-        // Clear the current webcam display.
-        document.getElementById("webcam-container").innerHTML = "";
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/";
+    const feedback = ["PET 1 - Can be recycled at curbside or your local recycling center", "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.", "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "LDPE 4 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "PP 5 - These are generaly recyclable.", "PS 6 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "Other 7 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center."]
 
-        // Create a new webcam instance.
-        webcam = new tmImage.Webcam(200, 200, true);
-        try {
-          // Attempt to setup the webcam with the new facing mode.
-          await webcam.setup({ video: { facingMode: { exact: currentFacingMode } } });
-        } catch (error) {
-          console.error("Facing mode constraint failed, trying without exact constraint:", error);
-          // Fallback: try without the exact constraint.
-          await webcam.setup({ video: { facingMode: currentFacingMode } });
-        }
+    let model, webcam, labelContainer, maxPredictions;
+
+    function indexOfMax(arr) {
+          if (arr.length === 0) return -1; // Return -1 for empty array
+        
+          let maxIndex = 0;
+        
+          for (let i = 1; i < arr.length; i++) {
+            if (arr[i] > arr[maxIndex]) {
+              maxIndex = i;
+            }
+          }
+        
+          return maxIndex;
+    }
+    
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
         await webcam.play();
+        window.requestAnimationFrame(loop);
 
-        // Re-append the webcam canvas.
+        // append elements to the DOM
         document.getElementById("webcam-container").appendChild(webcam.canvas);
-      }
-    </script>
-  </body>
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            document.getElementById("text").innerHTML = feedback[indexOfMax(classPrediction)];
+        }
+        document.getElementById("text").innerHTML = feedback[indexOfMax(classPrediction)];
+    }
+</script>
+
+</body>
 </html>
