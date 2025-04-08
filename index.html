@@ -5,11 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Camera Toggle Example</title>
   <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="title">The Recycle Disciple</div>
-  <div class="loader" id="loader"></div>
+
+  <!-- Loader -->
+  <div class="loader" id="loader"></div> 
+
+  <!-- Buttons -->
   <button type="button" onclick="init()">Start</button>
+  <button type="button" id="toggleButton" onclick="toggleCamera()" style="display:none;">Toggle Camera</button>
+
+  <!-- Containers -->
   <div id="webcam-container"></div>
   <div id="label-container"></div>
   <p id="text" style="text-align:center;"></p>
@@ -19,73 +29,134 @@
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
   <script type="text/javascript">
+    // Model URL from Teachable Machine
     const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/";
     var feedback = [
       "PET 1 - Can be recycled at curbside or your local recycling center",
       "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.",
       "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
       "LDPE 4 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
-      "PP 5 - These are generaly recyclable.",
+      "PP 5 - These are generally recyclable.",
       "PS 6 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
       "Other 7 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center."
     ];
 
     let model, webcam, labelContainer, maxPredictions;
+    // Default facingMode is set to "user" (front camera)
+    let currentFacingMode = "user";
 
+    // Utility: get the index of the maximum value in an array
     function indexOfMax(arr) {
-        if (arr.length === 0) return -1;
-        let maxIndex = 0;
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i] > arr[maxIndex]) {
-                maxIndex = i;
-            }
+      if (arr.length === 0) return -1;
+      let maxIndex = 0;
+      for (let i = 1; i < arr.length; i++) {
+        if (arr[i] > arr[maxIndex]) {
+          maxIndex = i;
         }
-        return maxIndex;
+      }
+      return maxIndex;
     }
 
+    // Initialize the model and start the camera
     async function init() {
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-        document.getElementById("loader").style.display = "block";
-        document.getElementById("text").innerHTML = "Loading...";
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
 
-        // Load model and metadata
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
-        document.getElementById("loader").style.display = "none";
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("text").innerHTML = "Loading...";
 
-        // Setup webcam
-        const flip = true;
-        webcam = new tmImage.Webcam(200, 200, flip);
-        await webcam.setup(); // Request camera access
-        await webcam.play();
+      // Load the Teachable Machine model
+      model = await tmImage.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
 
-        window.requestAnimationFrame(loop);
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
+      document.getElementById("loader").style.display = "none";
 
-        labelContainer = document.getElementById("label-container");
-        for (let i = 0; i < maxPredictions; i++) {
-            labelContainer.appendChild(document.createElement("div"));
-        }
+      // Start the camera with the default facing mode
+      await startCamera(currentFacingMode);
+
+      // Display the toggle camera button once the camera is running
+      document.getElementById("toggleButton").style.display = "inline-block";
+
+      // Setup label container (if needed for debugging or display)
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
     }
 
+    // Start camera with a given facing mode: "user" (front) or "environment" (back)
+    async function startCamera(facingMode) {
+      // If a webcam instance already exists, stop it
+      if (webcam) {
+        webcam.stop();
+      }
+      // Clear the current webcam container
+      const container = document.getElementById("webcam-container");
+      container.innerHTML = "";
+
+      // Determine whether to flip the image. Flip for front camera so it behaves like a mirror.
+      const flip = (facingMode === "user");
+
+      // Create a new webcam instance
+      webcam = new tmImage.Webcam(200, 200, flip);
+      // Set the facingMode if supported by the underlying API.
+      // (tmImage.Webcam uses getUserMedia internally so setting this value before calling setup() may work.)
+      webcam.facingMode = facingMode;
+      try {
+        await webcam.setup(); // Request camera access with specified constraints
+      } catch (error) {
+        console.error("Error setting up webcam:", error);
+        document.getElementById("text").innerHTML = "Camera setup failed. Make sure you have granted permissions.";
+        return;
+      }
+      await webcam.play();
+      
+      // Append webcam canvas to the container
+      container.appendChild(webcam.canvas);
+
+      // Start the prediction loop
+      window.requestAnimationFrame(loop);
+    }
+
+    // Toggle the camera between front ("user") and back ("environment")
+    async function toggleCamera() {
+      currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+      await startCamera(currentFacingMode);
+    }
+
+    // Continuous prediction loop using the model
     async function loop() {
-        webcam.update();
-        await predict();
-        window.requestAnimationFrame(loop);
+      webcam.update(); // update the webcam frame
+      await predict();
+      window.requestAnimationFrame(loop);
     }
 
+    // Run the webcam image through the image model and update the feedback text
     async function predict() {
-        const prediction = await model.predict(webcam.canvas);
-        // Optionally, update labelContainer here for debugging
+      const prediction = await model.predict(webcam.canvas);
 
-        const probabilities = [];
-        for (let i = 0; i < 7; i++) {
-            probabilities.push(parseFloat(prediction[i].probability.toFixed(2)));
-        }
- 
-        const max = indexOfMax(probabilities);
-        document.getElementById("text").innerHTML = feedback[max] || "Unknown prediction";
+      // Optionally, update labelContainer for all classes (if needed)
+      for (let i = 0; i < maxPredictions; i++) {
+        // Uncomment the next line if you want to display each probability
+        // labelContainer.childNodes[i].innerHTML = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+      }
+
+      // Create an array with probabilities rounded to 2 decimals
+      const probabilities = [];
+      for (let i = 0; i < 7; i++) {
+        probabilities.push(parseFloat(prediction[i].probability.toFixed(2)));
+      }
+      
+      // Get the index of the highest probability
+      var maxIndex = indexOfMax(probabilities);
+
+      // Display the appropriate feedback text based on the prediction
+      if (maxIndex >= 0 && maxIndex < feedback.length) {
+        document.getElementById("text").innerHTML = feedback[maxIndex];
+      } else {
+        document.getElementById("text").innerHTML = "Unknown prediction";
+      }
     }
   </script>
 </body>
