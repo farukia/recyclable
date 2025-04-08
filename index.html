@@ -5,16 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recycle Disciple</title>
   <link href="style.css" rel="stylesheet" />
+  <style>
+    .title {
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+      margin-top: 20px;
+    }
+    .center-button {
+      text-align: center;
+      margin-top: 10px;
+    }
+    #text {
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
   <div class="title">The Recycle Disciple</div>
   <div class="loader" id="loader"></div> 
 
-  <button onclick="init()">Start</button>
-  <button id="toggleButton" onclick="toggleCamera()" style="display: none;">Toggle Camera</button>
+  <div class="center-button">
+    <button onclick="init()">Start</button>
+  </div>
 
-  <div id="webcam-container"></div>
-  <div id="label-container"></div>
+  <div class="center-button">
+    <button id="toggleButton" onclick="toggleCamera()" style="display: none;">Toggle Camera</button>
+  </div>
+
+  <div id="webcam-container" style="text-align:center;"></div>
+  <div id="label-container" style="text-align:center;"></div>
   <p id="text" style="text-align:center;"></p>
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
@@ -33,7 +53,7 @@
     ];
 
     let model, webcam, labelContainer, maxPredictions;
-    let facingMode = "environment"; // Start with back camera
+    let facingMode = "environment"; // Default to back camera
 
     function indexOfMax(arr) {
       return arr.reduce((maxIdx, val, idx, array) => val > array[maxIdx] ? idx : maxIdx, 0);
@@ -62,18 +82,23 @@
 
       const constraints = {
         video: {
-          facingMode: { exact: mode }
+          facingMode: { ideal: mode }
         },
         audio: false
       };
 
-      // Clean up existing canvas if present
       const container = document.getElementById("webcam-container");
       container.innerHTML = "";
 
       webcam = new tmImage.Webcam(200, 200);
-      await webcam.setup(constraints);
-      await webcam.play();
+      try {
+        await webcam.setup(constraints);
+        await webcam.play();
+      } catch (err) {
+        alert("Could not access the camera. Please allow permissions or try another device.");
+        console.error(err);
+        return;
+      }
 
       container.appendChild(webcam.canvas);
 
