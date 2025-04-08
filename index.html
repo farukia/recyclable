@@ -51,86 +51,80 @@
       "PS 6 - These are generally not recyclable.",
       "Other 7 - These are generally not recyclable."
     ];
-
-    let model, webcam, labelContainer, maxPredictions;
-    let facingMode = "environment"; // Default to back camera
-
-    function indexOfMax(arr) {
-      return arr.reduce((maxIdx, val, idx, array) => val > array[maxIdx] ? idx : maxIdx, 0);
-    }
-
+  
+    let model, maxPredictions;
+    let stream;
+    let facingMode = "environment"; // start with back camera
+  
     async function init() {
-      document.getElementById("loader").style.display = "block";
-      document.getElementById("text").innerHTML = "Loading...";
-
       const modelURL = URL + "model.json";
       const metadataURL = URL + "metadata.json";
-
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("text").innerText = "Loading...";
+  
       model = await tmImage.load(modelURL, metadataURL);
       maxPredictions = model.getTotalClasses();
-
-      document.getElementById("loader").style.display = "none";
+  
+      await startCamera();
       document.getElementById("toggleButton").style.display = "inline-block";
-
-      await startCamera(facingMode);
+      document.getElementById("loader").style.display = "none";
     }
-
-    async function startCamera(mode) {
-      if (webcam) {
-        webcam.stop();
-      }
-
+  
+    async function startCamera() {
       const constraints = {
         video: {
-          facingMode: { ideal: mode }
+          facingMode: { ideal: facingMode }
         },
         audio: false
       };
-
-      const container = document.getElementById("webcam-container");
-      container.innerHTML = "";
-
-      webcam = new tmImage.Webcam(200, 200);
+  
       try {
-        await webcam.setup(constraints);
-        await webcam.play();
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+  
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        const video = document.createElement("video");
+        video.setAttribute("autoplay", true);
+        video.setAttribute("playsinline", true);
+        video.width = 200;
+        video.height = 200;
+  
+        const webcamContainer = document.getElementById("webcam-container");
+        webcamContainer.innerHTML = '';
+        webcamContainer.appendChild(video);
+        video.srcObject = stream;
+  
+        video.onloadedmetadata = () => {
+          video.play();
+          loop(video);
+        };
       } catch (err) {
-        alert("Could not access the camera. Please allow permissions or try another device.");
-        console.error(err);
-        return;
+        console.error("Camera error:", err);
+        alert("Failed to access the camera. Make sure you allowed permissions and are using HTTPS.");
       }
-
-      container.appendChild(webcam.canvas);
-
-      labelContainer = document.getElementById("label-container");
-      labelContainer.innerHTML = "";
-      for (let i = 0; i < maxPredictions; i++) {
-        labelContainer.appendChild(document.createElement("div"));
-      }
-
-      window.requestAnimationFrame(loop);
     }
-
-    async function loop() {
-      webcam.update();
-      await predict();
-      window.requestAnimationFrame(loop);
+  
+    async function loop(video) {
+      await predict(video);
+      requestAnimationFrame(() => loop(video));
     }
-
-    async function predict() {
-      const prediction = await model.predict(webcam.canvas);
+  
+    async function predict(video) {
+      const prediction = await model.predict(video);
       const probabilities = prediction.map(p => parseFloat(p.probability.toFixed(2)));
-      const maxIndex = indexOfMax(probabilities);
-
+      const maxIndex = probabilities.indexOf(Math.max(...probabilities));
+  
       if (feedback[maxIndex]) {
-        document.getElementById("text").innerHTML = feedback[maxIndex];
+        document.getElementById("text").innerText = feedback[maxIndex];
       }
     }
-
+  
     async function toggleCamera() {
-      facingMode = facingMode === "user" ? "environment" : "user";
-      await startCamera(facingMode);
+      facingMode = (facingMode === "user") ? "environment" : "user";
+      await startCamera();
     }
   </script>
+  
 </body>
 </html>
