@@ -3,128 +3,138 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recycle Disciple</title>
-  <link href="style.css" rel="stylesheet" />
-  <style>
-    .title {
-      text-align: center;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 24px;
-      margin-top: 20px;
-    }
-    .center-button {
-      text-align: center;
-      margin-top: 10px;
-    }
-    #text {
-      margin-top: 15px;
-    }
-  </style>
+  <title>Camera Toggle Example</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="title">The Recycle Disciple</div>
+
+  <!-- Loader -->
   <div class="loader" id="loader"></div> 
 
-  <div class="center-button">
-    <button onclick="init()">Start</button>
-  </div>
+  <!-- Buttons -->
+  <button type="button" onclick="init()">Start</button>
+  <button type="button" id="toggleButton" onclick="toggleCamera()" style="display:none;">Switch to Rear Camera</button>
 
-  <div class="center-button">
-    <button id="toggleButton" onclick="toggleCamera()" style="display: none;">Toggle Camera</button>
-  </div>
-
-  <div id="webcam-container" style="text-align:center;"></div>
-  <div id="label-container" style="text-align:center;"></div>
+  <!-- Containers -->
+  <div id="webcam-container"></div>
+  <div id="label-container"></div>
   <p id="text" style="text-align:center;"></p>
 
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
-  <script>
+  <script type="text/javascript">
     const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/";
-    const feedback = [
+    var feedback = [
       "PET 1 - Can be recycled at curbside or your local recycling center",
       "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.",
-      "PVC 3 - These are generally not recyclable.",
-      "LDPE 4 - These are generally not recyclable.",
+      "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
+      "LDPE 4 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
       "PP 5 - These are generally recyclable.",
-      "PS 6 - These are generally not recyclable.",
-      "Other 7 - These are generally not recyclable."
+      "PS 6 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
+      "Other 7 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center."
     ];
-  
-    let model, maxPredictions;
-    let stream;
-    let facingMode = "environment"; // start with back camera
-  
+
+    let model, webcam, labelContainer, maxPredictions;
+    let currentFacingMode = "user"; // Start with front camera
+
+    function indexOfMax(arr) {
+      if (arr.length === 0) return -1;
+      let maxIndex = 0;
+      for (let i = 1; i < arr.length; i++) {
+        if (arr[i] > arr[maxIndex]) {
+          maxIndex = i;
+        }
+      }
+      return maxIndex;
+    }
+
     async function init() {
       const modelURL = URL + "model.json";
       const metadataURL = URL + "metadata.json";
+
       document.getElementById("loader").style.display = "block";
-      document.getElementById("text").innerText = "Loading...";
-  
+      document.getElementById("text").innerHTML = "Loading...";
+
       model = await tmImage.load(modelURL, metadataURL);
       maxPredictions = model.getTotalClasses();
-  
-      await startCamera();
-      document.getElementById("toggleButton").style.display = "inline-block";
+
       document.getElementById("loader").style.display = "none";
+
+      await startCamera(currentFacingMode);
+      document.getElementById("toggleButton").style.display = "inline-block";
+
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
     }
-  
-    async function startCamera() {
-      const constraints = {
-        video: {
-          facingMode: { ideal: facingMode }
-        },
-        audio: false
-      };
-  
+
+    async function startCamera(facingMode) {
+      if (webcam) {
+        webcam.stop();
+      }
+
+      const container = document.getElementById("webcam-container");
+      container.innerHTML = "";
+
+      const flip = (facingMode === "user");
+
+      webcam = new tmImage.Webcam(200, 200, flip);
+      webcam.facingMode = facingMode;
       try {
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop());
-        }
-  
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-        const video = document.createElement("video");
-        video.setAttribute("autoplay", true);
-        video.setAttribute("playsinline", true);
-        video.width = 200;
-        video.height = 200;
-  
-        const webcamContainer = document.getElementById("webcam-container");
-        webcamContainer.innerHTML = '';
-        webcamContainer.appendChild(video);
-        video.srcObject = stream;
-  
-        video.onloadedmetadata = () => {
-          video.play();
-          loop(video);
-        };
-      } catch (err) {
-        console.error("Camera error:", err);
-        alert("Failed to access the camera. Make sure you allowed permissions and are using HTTPS.");
+        await webcam.setup();
+      } catch (error) {
+        console.error("Error setting up webcam:", error);
+        document.getElementById("text").innerHTML = "Camera setup failed. Make sure you have granted permissions.";
+        return;
       }
+      await webcam.play();
+      container.appendChild(webcam.canvas);
+      window.requestAnimationFrame(loop);
     }
-  
-    async function loop(video) {
-      await predict(video);
-      requestAnimationFrame(() => loop(video));
-    }
-  
-    async function predict(video) {
-      const prediction = await model.predict(video);
-      const probabilities = prediction.map(p => parseFloat(p.probability.toFixed(2)));
-      const maxIndex = probabilities.indexOf(Math.max(...probabilities));
-  
-      if (feedback[maxIndex]) {
-        document.getElementById("text").innerText = feedback[maxIndex];
-      }
-    }
-  
+
+    // Only allow one-time switch from front to rear camera
     async function toggleCamera() {
-      facingMode = (facingMode === "user") ? "environment" : "user";
-      await startCamera();
+      if (currentFacingMode === "user") {
+        currentFacingMode = "environment";
+        await startCamera(currentFacingMode);
+        document.getElementById("toggleButton").style.display = "none"; // Optional: hide after switching
+      }
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+
+      for (let i = 0; i < maxPredictions; i++) {
+        // labelContainer.childNodes[i].innerHTML = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+      }
+
+      const probabilities = [];
+      for (let i = 0; i < 7; i++) {
+        probabilities.push(parseFloat(prediction[i].probability.toFixed(2)));
+      }
+
+      var maxIndex = indexOfMax(probabilities);
+
+      if (maxIndex >= 0 && maxIndex < feedback.length) {
+        document.getElementById("text").innerHTML = feedback[maxIndex];
+      } else {
+        document.getElementById("text").innerHTML = "Unknown prediction";
+      }
     }
   </script>
-  
 </body>
 </html>
