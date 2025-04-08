@@ -30,7 +30,7 @@
 
   <script type="text/javascript">
     const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/";
-    var feedback = [
+    const feedback = [
       "PET 1 - Can be recycled at curbside or your local recycling center",
       "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.",
       "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.",
@@ -41,7 +41,7 @@
     ];
 
     let model, webcam, labelContainer, maxPredictions;
-    let currentFacingMode = "user"; // Start with front camera
+    let currentFacingMode = "user"; // default to front camera
 
     function indexOfMax(arr) {
       if (arr.length === 0) return -1;
@@ -86,27 +86,27 @@
 
       const flip = (facingMode === "user");
 
+      // Create webcam with proper flip
       webcam = new tmImage.Webcam(200, 200, flip);
-      webcam.facingMode = facingMode;
+
+      // Pass facingMode directly into getUserMedia via constraints
       try {
-        await webcam.setup();
+        await webcam.setup({ facingMode: facingMode }); 
       } catch (error) {
-        console.error("Error setting up webcam:", error);
-        document.getElementById("text").innerHTML = "Camera setup failed. Make sure you have granted permissions.";
+        console.error("Camera error:", error);
+        document.getElementById("text").innerHTML = "Camera setup failed. Make sure you granted permissions.";
         return;
       }
+
       await webcam.play();
       container.appendChild(webcam.canvas);
       window.requestAnimationFrame(loop);
     }
 
-    // Only allow one-time switch from front to rear camera
     async function toggleCamera() {
-      if (currentFacingMode === "user") {
-        currentFacingMode = "environment";
-        await startCamera(currentFacingMode);
-        document.getElementById("toggleButton").style.display = "none"; // Optional: hide after switching
-      }
+      // Switch to the other camera
+      currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+      await startCamera(currentFacingMode);
     }
 
     async function loop() {
@@ -117,17 +117,13 @@
 
     async function predict() {
       const prediction = await model.predict(webcam.canvas);
-
-      for (let i = 0; i < maxPredictions; i++) {
-        // labelContainer.childNodes[i].innerHTML = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-      }
-
       const probabilities = [];
+
       for (let i = 0; i < 7; i++) {
         probabilities.push(parseFloat(prediction[i].probability.toFixed(2)));
       }
 
-      var maxIndex = indexOfMax(probabilities);
+      const maxIndex = indexOfMax(probabilities);
 
       if (maxIndex >= 0 && maxIndex < feedback.length) {
         document.getElementById("text").innerHTML = feedback[maxIndex];
