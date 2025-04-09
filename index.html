@@ -68,29 +68,44 @@
 
             document.getElementById("loader").style.display = "none";
 
-            // Webcam setup with constraints for back camera
-            const flip = true; // whether to flip the webcam
-            const constraints = {
-                video: {
-                    facingMode: "environment", // This targets the back camera
-                    width: { ideal: 200 },
-                    height: { ideal: 200 }
-                }
-            };
+            // Check available devices and select the back camera
+            navigator.mediaDevices.enumerateDevices().then(devices => {
+                let videoDevices = devices.filter(device => device.kind === "videoinput");
+                let backCamera = videoDevices.find(device => device.label.toLowerCase().includes("back"));
 
-            // Setup the webcam with the constraints
-            webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
-            await webcam.setup(constraints); // request access to the webcam with constraints
-            await webcam.play();
-            window.requestAnimationFrame(loop);
+                // If a back camera is found, use it
+                const constraints = {
+                    video: {
+                        deviceId: backCamera ? { exact: backCamera.deviceId } : undefined,
+                        facingMode: { exact: "environment" }, // Ensure back camera is used
+                        width: { ideal: 200 },
+                        height: { ideal: 200 }
+                    }
+                };
 
-            // Append elements to the DOM
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            labelContainer = document.getElementById("label-container");
+                // Setup the webcam with the selected constraints
+                webcam = new tmImage.Webcam(200, 200, true); // width, height, flip
+                webcam.setup(constraints)
+                    .then(() => {
+                        webcam.play();
+                        window.requestAnimationFrame(loop);
 
-            for (let i = 0; i < maxPredictions; i++) { // and class labels
-                labelContainer.appendChild(document.createElement("div"));
-            }
+                        // Append elements to the DOM
+                        document.getElementById("webcam-container").appendChild(webcam.canvas);
+                        labelContainer = document.getElementById("label-container");
+
+                        for (let i = 0; i < maxPredictions; i++) { // and class labels
+                            labelContainer.appendChild(document.createElement("div"));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error accessing webcam:", error);
+                        document.getElementById("text").innerHTML = "Error accessing webcam. Please check permissions.";
+                    });
+            }).catch(error => {
+                console.error("Error enumerating devices:", error);
+                document.getElementById("text").innerHTML = "Error finding cameras.";
+            });
         }
 
         async function loop() {
@@ -101,14 +116,8 @@
 
         // Run the webcam image through the image model
         async function predict() {
-            // Predict can take in an image, video or canvas HTML element
+            // Predict can take in an image, video, or canvas HTML element
             const prediction = await model.predict(webcam.canvas);
-
-            // For debugging purposes, you can log the class prediction here
-            // for (let i = 0; i < maxPredictions; i++) {
-            //     const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-            //     labelContainer.childNodes[i].innerHTML = classPrediction;
-            // }
 
             var probabilities = [];
             for (let i = 0; i < 7; i++) {
