@@ -140,4 +140,47 @@ a {
 text-decorarion: none;
 }
 
+ .navbar {
+    /** #1f5de3; **/
+    background-color: #41a95b;
+    overflow: hidden;
+    margin: 0;
+    /**box-shadow: 0 0px 11px rgb(27, 50, 101);**/
+  }
+  
+  .navbar a {
+    float: right;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    text-decoration: none;
+    font-size: 17px;
+    transition-duration: 0.5s;
+  }
+  
+  .navbar .left {
+    float: left;
+    display:block;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    text-decoration: none;
+    font-size: 17px;
+    transition-duration:none;
+  }
+  
+  .logo {
+    display: block;
+    }
+  
+  .navbar a:hover {
+    color: #ddd;
+    transition-duration: 0.5s;
+  }
+  
+  .navbar .icon {
+    display: none;
+  }
+
 
