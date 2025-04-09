@@ -1,263 +1,139 @@
 <!DOCTYPE html>
-<html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width">
-      <title></title>
-       <link href="style.css" rel="stylesheet" type="text/css" />
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>The Recycle Disciple</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- https://teachablemachine.withgoogle.com/models/fgxQHUQ3z/-->
+    <div class="title">The Recycle Disciple</div>
 
+    <div class="loader" id="loader"></div> 
 
-    </head>
-    <body>
-        <!-- https://teachablemachine.withgoogle.com/models/fgxQHUQ3z/-->
- 
+    <button type="button" onclick="init()">Start</button>
 
-<div class="title">The Recycle Disciple</div>
- 
+    <div id="webcam-container"></div>
 
+    <div id="label-container"></div>
 
- 
+    <p id="text" style="text-align:center;"></p>
 
-<div class="loader" id="loader"></div> 
- 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
-<button type="button" onclick="init()">Start</button>
- 
+    <script type="text/javascript">
+        // the link to your model provided by Teachable Machine export panel
+        const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/";
+        var feedback = [
+            "PET 1 - Can be recycled at curbside or your local recycling center", 
+            "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.", 
+            "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", 
+            "LDPE 4 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", 
+            "PP 5 - These are generally recyclable.", 
+            "PS 6 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", 
+            "Other 7 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center."
+        ];
 
-<div id="webcam-container"></div>
- 
+        let model, webcam, labelContainer, maxPredictions;
 
-<div id="label-container"></div>
- 
+        function indexOfMax(arr) {
+            if (arr.length === 0) return -1; // Return -1 for empty array
 
-<p id="text" style="text-align:center;"></p>
- 
+            let maxIndex = 0;
 
+            for (let i = 1; i < arr.length; i++) {
+                if (arr[i] > arr[maxIndex]) {
+                    maxIndex = i;
+                }
+            }
 
- 
+            return maxIndex;
+        }
 
-    
- 
+        // Load the image model and setup the webcam
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("text").innerHTML = "Loading...";
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
- 
+            // Load the model and metadata
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
 
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
- 
+            document.getElementById("loader").style.display = "none";
 
-<script type="text/javascript">
- 
+            // Webcam setup with constraints for back camera
+            const flip = true; // whether to flip the webcam
+            const constraints = {
+                video: {
+                    facingMode: "environment", // This targets the back camera
+                    width: { ideal: 200 },
+                    height: { ideal: 200 }
+                }
+            };
 
-    // More API functions here:
- 
+            // Setup the webcam with the constraints
+            webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+            await webcam.setup(constraints); // request access to the webcam with constraints
+            await webcam.play();
+            window.requestAnimationFrame(loop);
 
-    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
- 
+            // Append elements to the DOM
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
 
-
- 
-
-    // the link to your model provided by Teachable Machine export panel
- 
-
-    const URL = "https://teachablemachine.withgoogle.com/models/Q0vMyAAez/";
-    var feedback = ["PET 1 - Can be recycled at curbside or your local recycling center", "HDPE 2 - Can be recycled at curbside or your local recycling center. Lids may be replaced.", "PVC 3 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "LDPE 4 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "PP 5 - These are generaly recyclable.", "PS 6 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center.", "Other 7 - These are generally not recyclable. If you wish to recycle it, check with your local recycling center."]
-
-
- 
-
-    let model, webcam, labelContainer, maxPredictions;
- 
-
-    function indexOfMax(arr) {
-        if (arr.length === 0) return -1; // Return -1 for empty array
-
-        let maxIndex = 0;
-
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i] > arr[maxIndex]) {
-            maxIndex = i;
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
             }
         }
 
-        return maxIndex;
-        }
-        
-
-    // Load the image model and setup the webcam
- 
-
-    async function init() {
- 
-
-        const modelURL = URL + "model.json";
- 
-
-        const metadataURL = URL + "metadata.json";
- 
-
-        document.getElementById("loader").style.display = "block";
- 
-
-        document.getElementById("text").innerHTML = "Loading..."
- 
-
-        // load the model and metadata
- 
-
-        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
- 
-
-        // or files from your local hard drive
- 
-
-        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
- 
-
-        model = await tmImage.load(modelURL, metadataURL);
- 
-
-        maxPredictions = model.getTotalClasses();
- 
-
-
- 
-
-        document.getElementById("loader").style.display = "none";
- 
-
-
- 
-
-        // Convenience function to setup a webcam
- 
-
-        const flip = true; // whether to flip the webcam
- 
-
-        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
- 
-
-        await webcam.setup(); // request access to the webcam
- 
-
-        await webcam.play();
- 
-
-        window.requestAnimationFrame(loop);
- 
-
-
- 
-
-        // append elements to the DOM
- 
-
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
- 
-
-        labelContainer = document.getElementById("label-container");
- 
-
-        for (let i = 0; i < maxPredictions; i++) { // and class labels
- 
-
-            labelContainer.appendChild(document.createElement("div"));
- 
-
-        }
- 
-
-
- 
-
-    }
- 
-
-
- 
-
-    async function loop() {
- 
-
-        webcam.update(); // update the webcam frame
- 
-
-        await predict();
- 
-
-        window.requestAnimationFrame(loop);
- 
-
-    }
- 
-
-
- 
-
-    // run the webcam image through the image model
- 
-
-    async function predict() {
- 
-
-        // predict can take in an image, video or canvas html element
- 
-
-        const prediction = await model.predict(webcam.canvas);
- 
-
-        for (let i = 0; i < maxPredictions; i++) {
- 
-
-            const classPrediction =
- 
-
-                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
- 
-
-            // labelContainer.childNodes[i].innerHTML = classPrediction;
- 
-
+        async function loop() {
+            webcam.update(); // update the webcam frame
+            await predict();
+            window.requestAnimationFrame(loop);
         }
 
-        var probabilities = []
-        for (let i = 0; i < 7; i++) {
-            probabilities.push(prediction[i].probability.toFixed(2))
+        // Run the webcam image through the image model
+        async function predict() {
+            // Predict can take in an image, video or canvas HTML element
+            const prediction = await model.predict(webcam.canvas);
+
+            // For debugging purposes, you can log the class prediction here
+            // for (let i = 0; i < maxPredictions; i++) {
+            //     const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            //     labelContainer.childNodes[i].innerHTML = classPrediction;
+            // }
+
+            var probabilities = [];
+            for (let i = 0; i < 7; i++) {
+                probabilities.push(prediction[i].probability.toFixed(2));
+            }
+
+            var max = indexOfMax(probabilities);
+
+            if (max == 0) {
+                document.getElementById("text").innerHTML = feedback[0];
+            } else if (max == 1) {
+                document.getElementById("text").innerHTML = feedback[1];
+            } else if (max == 2) {
+                document.getElementById("text").innerHTML = feedback[2];
+            } else if (max == 3) {
+                document.getElementById("text").innerHTML = feedback[3];
+            } else if (max == 4) {
+                document.getElementById("text").innerHTML = feedback[4];
+            } else if (max == 5) {
+                document.getElementById("text").innerHTML = feedback[5];
+            } else if (max == 6) {
+                document.getElementById("text").innerHTML = feedback[6];
+            }
         }
- 
-        var max = indexOfMax(probabilities)
-
-        if (max == 0) {
-            document.getElementById("text").innerHTML = feedback[0]
-        } else if (max == 1) {
-            document.getElementById("text").innerHTML = feedback[1]
-        } else if (max == 2) {
-            document.getElementById("text").innerHTML = feedback[2]
-        } else if (max == 3) {
-            document.getElementById("text").innerHTML = feedback[3]
-        } else if (max == 4) {
-            document.getElementById("text").innerHTML = feedback[4]
-        } else if (max == 5) {
-            document.getElementById("text").innerHTML = feedback[5]
-        } else if (max == 6) {
-            document.getElementById("text").innerHTML = feedback[6]
-        }
-
-
-    }
- 
-
-
- 
-
-</script>
- 
+    </script>
 
 </body>
- 
-
 </html>
