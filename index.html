@@ -68,10 +68,10 @@
 
         document.getElementById("loader").style.display = "none";
 
-        const flip = true;
+        const flip = false;
 
         webcam = new tmImage.Webcam(200, 200, flip);
-        await webcam.setup();
+        await webcam.setup({ facingMode: "environment" });
         await webcam.play();
 
         window.requestAnimationFrame(loop);
