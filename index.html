@@ -21,7 +21,7 @@
     <div class="loader" id="loader"></div>
 
     <b><button type="button" onclick="init()">Start</button></b>
-    <b><button type="button" onclick="captureImage()">Capture Image</button></b>
+    <b><button id="capture-btn" type="button" onclick="captureImage()" style="display: none;">Capture Image</button></b>
 
     <div id="webcam-container"></div>
     <div id="label-container"></div>
@@ -57,6 +57,13 @@
       }
 
       async function init() {
+        isLooping = true;
+
+        // Clear previous webcam and prediction
+        document.getElementById("webcam-container").innerHTML = "";
+        document.getElementById("text").innerHTML = "";
+        document.getElementById("capture-btn").style.display = "inline-block";
+
         const modelURL = URL + "model.json";
         const metadataURL = URL + "metadata.json";
 
@@ -73,15 +80,14 @@
         await webcam.setup({ facingMode: "environment" });
         await webcam.play();
 
-        window.requestAnimationFrame(loop);
         document.getElementById("webcam-container").appendChild(webcam.canvas);
+        window.requestAnimationFrame(loop);
 
         labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = "";
         for (let i = 0; i < maxPredictions; i++) {
           labelContainer.appendChild(document.createElement("div"));
         }
-
-        isLooping = true;
       }
 
       async function loop() {
