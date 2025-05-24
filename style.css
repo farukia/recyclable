@@ -38,12 +38,45 @@ body {
   opacity: 0.8;
 }
 
+
 .title {
   text-align: center;
   font-size: 3.5rem;
   color: #2F6F4E;
   margin: 3rem 0 1rem;
 }
+
+.wrapper {
+  margin: 20px;
+  display: inline-block;
+}
+
+.progress-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: #eee;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 20px auto;
+  }
+
+  .progress-bar {
+    height: 30px;
+    width: 0%;
+    background-color: #2a9d8f;
+    border-radius: 25px 0 0 25px;
+    text-align: center;
+    color: white;
+    line-height: 30px;
+    font-weight: bold;
+    transition: width 0.5s ease-in-out;
+  }
+
+  .progress-text {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 18px;
+  }
 
 button {
   background-color: #2F6F4E;
