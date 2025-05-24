@@ -20,7 +20,9 @@ body {
   z-index: 1000;
   border-top: 1px solid #ccc;
   display: flex;
-  justify-content: space-around;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
   padding: 10px 0;
 }
 
@@ -29,6 +31,7 @@ body {
   text-decoration: none;
   margin-left: 1.5rem;
   transition: opacity 0.2s ease-in-out;
+  font-size: 30px;
 }
 
 .navbar a:hover {
