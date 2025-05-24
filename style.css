@@ -1,218 +1,98 @@
-html {
-  height: 100%;
-  width: 100%;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color:#242424;
-    /**#1d203a; **/
-  color: white;
-  margin: 0 auto;
-  overflow-x:hidden;
+body {
+  background-color: #F9FAF8;
+  color: #1C1C1C;
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
 }
 
-.wrapper {
-  margin: 80px;
+.navbar {
+  background-color: #2F6F4E;
+  padding: 1rem 2rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  border-top: 1px solid #ccc;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.navbar a:hover {
+  opacity: 0.8;
 }
 
 .title {
-  color:white;
   text-align: center;
-  font-size: 45px;
+  font-size: 3.5rem;
+  color: #2F6F4E;
+  margin: 3rem 0 1rem;
 }
-
-h3 {
-  font-size: 30px;
-}
-
 
 button {
+  background-color: #2F6F4E;
   color: white;
-  background-color: #41a95b;
-  border-style: none;
-  transition-duration: 0.8s;
-  border-radius: 5px;
-  float: none;
-  font-size: 20px;
-  margin: 20px auto;
-  display: block;
-  font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  padding: 10px;
-  box-shadow: 0 0 20px 2px #41a95b;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin: 0.5rem;
+  display:block;
+  margin: 10px auto;
 }
 
 button:hover {
-  background-color:1649FF;
-  transition-duration: 0.8s;
-  cursor: pointer;
-  box-shadow: 0 0 40px 2px #41a95b;
-}
-
-h2 {
-  background-color: #41a95b;
-  box-shadow: 0 0 20px 2px #41a95b;
-   /** #6D6D6D; **/
-  height: 50px;
-  width: 50px;
-  margin: 10px auto;
-  text-align: center;
-}
-
-.female {
-  border-radius: 100%;
-}
-
-.child {
-  transform: rotate(-45deg);
-}
-
-.parent {
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.parents {
-  float: center;
-}
-
-input {
-  border-color: black;
-}
-
-.header {
-  background-color: #1649FF;
-  height: 80px;
-  width: 100% + 15px;
-  margin: -15px;
-  box-shadow: 0 0 90px 2px #1b1b1b;
-  /**box-shadow: 0 -5px 50px 2px black;**/
-}
-
-.header a {
-  color: white; 
-  text-decoration: none;
-  transition-duration: 0.8s;
-}
-
-.header a:hover {
-  color: lightgray;
-  transition-duration: 0.8s;
-}
-
-footer {
-  text-align: center;
-  opacity: 50%;
-  padding: 20px;
-}
-
-footer a {
-  transition-duration: 0.8s;
-  color: white;
-}
-
-footer a:hover {
-  transition-duration: 0.8s;
-  color: lightgray;
-}
-
-.radiobutton {
-  font-size: 20px;
-}
-
-p {
-  font-size: 20px;
-}
-
-h4 {
-  font-size:25px;
-
+  background-color: #234837;
 }
 
 #webcam-container {
-  text-align: center;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }
 
 #label-container {
-  margin: 0 auto;
   text-align: center;
+  font-size: 1rem;
+  margin-top: 1.5rem;
+  color: #6C757D;
 }
 
-a {
-text-decorarion: none;
+#text {
+  text-align: center;
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  padding: 0 1rem;
+  color: #1C1C1C;
 }
 
- .navbar {
-    /** #1f5de3; **/
-    background-color: #41a95b;
-    overflow: hidden;
-    margin: 0;
-    /**box-shadow: 0 0px 11px rgb(27, 50, 101);**/
-  }
-  
-  .navbar a {
-    float: right;
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 30px 20px;
-    text-decoration: none;
-    font-size: 17px;
-    transition-duration: 0.5s;
-  }
-  
-  .navbar .left {
-    float: left;
-    display:block;
-    color: white;
-    text-align: center;
-    padding: 30px 20px;
-    text-decoration: none;
-    font-size: 17px;
-    transition-duration:none;
-  }
-  
-  .logo {
-    display: block;
-    }
-  
-  .navbar a:hover {
-    color: #ddd;
-    transition-duration: 0.5s;
-  }
-  
-  .navbar .icon {
-    display: none;
-  }
-  
-  @media screen and (max-width: 600px) {
-  .navbar a:not(:first-child) {display: none;}
-  .navbar a.icon {
-    float: right;
-    display: block;
-  }
-  .left {
-    display: none;
-    }
-    h1 {
-        font-size: 50px;
-    }
+.loader {
+  display: none;
+  border: 4px solid #F9FAF8;
+  border-top: 4px solid #FFB300;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
 }
 
-/* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
-@media screen and (max-width: 600px) {
-  .navbar.responsive {position: relative;}
-  .navbar.responsive a.icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-  .navbar.responsive a {
-    float: none;
-    display: block;
-    text-align: left;
-  }
-  .logo {
-    display:none;
-    }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
-
-
