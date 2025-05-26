@@ -13,9 +13,14 @@
   <body>
     <script src="script.js"></script>
 
+    <div class="top">
+      <h1> My Profile </h1>
+    </div>
+
     <div class="navbar" id="myNavbar">
-      <a href="profile.html"><i class="fa fa-user"></i></a>
       <a href="index.html"><i class="fa fa-home"></i></a>
+      <a href="learn.html"><i class="fa fa-info"></i></a>
+      <a href="profile.html"><i class="fa fa-user"></i></a>
     </div>
 
     <div class="wrapper">
@@ -29,12 +34,16 @@
     </script>
 
     <p> Set a montly goal and track how much you've recycled!</p>
-    </div>
+    
 
     <div style="display: flex; justify-content:center;">
     <input id="goalInput" type="number" name="recycled" min="0" step="1" />
     </div>
     <button id="setGoal" onclick="setGoal()">Set Goal</button>
+
+    <p>I recycled an outside item that I did not scan.</p>
+    <button id="addOutside" onclick="addOutside()">Add 1 Item</button>
+    </div>
     
 
     <div class="progress-container">
