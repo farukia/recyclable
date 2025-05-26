@@ -112,6 +112,14 @@
     }
   }
 
+  function addOutside() {
+    monthlyRecycle += 1;
+    localStorage.setItem("monthlyRecycle", monthlyRecycle);
+    isLooping = true;
+    resetBar();
+    loop();
+  }
+
   function resetBar() {
     const progressPercent = monthlyGoal > 0 ? (monthlyRecycle / monthlyGoal) * 100 : 0;
     const progressBar = document.getElementById("progress-bar");
@@ -133,7 +141,7 @@
     localStorage.setItem("recycleMonth", currentMonth.toString());
 
     // Reset UI vars if needed
-    monthlyRecycle = 0;
+    goal = 0;
     resetBar();
     document.getElementById("auxilary-tet").innerHTML = "New month! Your recycling goal has been reset.";
   }
@@ -141,8 +149,10 @@
 window.onload = function () {
   checkAndResetMonthlyGoal();
   resetBar(); // Or any other function you'd like to run
-  if (monthlyGoal = monthlyRecycle) {
-    document.getElementById("auxilary-tet").innerHTML = "Congrats! You met your monthly goal.";
+  if (monthlyRecycle >= monthlyGoal) {
+    document.getElementById("auxilary-text").innerHTML = "Congrats! You met your monthly goal.";
+  } else {
+    document.getElementById("auxilary-text").innerHTML = "Keep going! You can still meet your monthly goal.";
   }
 };
 
