@@ -93,6 +93,11 @@ html {
     font-size: 18px;
   }
 
+  a {
+    text-decoration: none;
+    text-emphasis: none;
+  }
+
 button {
   background-color: #2F6F4E;
   color: white;
