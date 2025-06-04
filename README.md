@@ -8,7 +8,6 @@
 The Recycle Disciple empowers individuals to reduce plastic waste by simplifying the recycling process. By helping users recognize plastic types and track their environmental impact, the app contributes to the United Nations Sustainable Development Goals (SDGs), specifically:
 
 - **SDG 12: Responsible Consumption and Production**
-- **SDG 13: Climate Action**
 
 ## ✨ Features
 
@@ -36,7 +35,7 @@ View the full [Privacy Policy](https://farukia.github.io/privacy.html).
 ## 💡 Tech Stack
 
 - Frontend: HTML5, JavaScript, MIT App Inventor
-- Image Recognition: TensorFlow.js / custom ML model
+- Image Recognition: TensorFlow.js
 - Local Storage: Browser/Device memory (no cloud or external server required)
 
 ## 🧠 How It Works
