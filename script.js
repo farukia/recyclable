@@ -159,13 +159,13 @@ window.onload = function () {
 // Non-PII Data Extraction
   document.getElementById('exportDataBtn').addEventListener('click', () => {
     // Get data from localStorage
-    const monthlyRecycle = localStorage.getItem('monthlyRecycle');
-    const goal = localStorage.getItem('goal');
+  let monthlyRecycle = parseInt(localStorage.getItem("monthlyRecycle")) || 0;
+  let monthlyGoal = parseInt(localStorage.getItem("goal")) || 10;
 
     // Prepare an object with your data
     const data = {
       monthlyRecycle: monthlyRecycle ? JSON.parse(monthlyRecycle) : null,
-      goal: goal ? JSON.parse(goal) : null
+      goal: montlyGoal ? JSON.parse(goal) : null
     };
 
     // Convert object to JSON string
