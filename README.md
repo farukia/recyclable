@@ -22,7 +22,7 @@ The Recycle Disciple empowers individuals to reduce plastic waste by simplifying
 
 ## 🔓 Open Source
 
-This project is released under the [MIT License](LICENSE). Contributions are welcome!
+This project is released under the [CC BY-NC 4.0](LICENSE). Contributions are welcome!
 
 ## 💾 Data Privacy
 
