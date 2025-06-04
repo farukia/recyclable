@@ -156,4 +156,35 @@ window.onload = function () {
   }
 };
 
+// Non-PII Data Extraction
+  document.getElementById('exportDataBtn').addEventListener('click', () => {
+    // Get data from localStorage
+    const monthlyRecycle = localStorage.getItem('monthlyRecycle');
+    const goal = localStorage.getItem('goal');
+
+    // Prepare an object with your data
+    const data = {
+      monthlyRecycle: monthlyRecycle ? JSON.parse(monthlyRecycle) : null,
+      goal: goal ? JSON.parse(goal) : null
+    };
+
+    // Convert object to JSON string
+    const jsonString = JSON.stringify(data, null, 2);
+
+    // Create a Blob with the JSON data
+    const blob = new Blob([jsonString], { type: 'application/json' });
+
+    // Create a temporary link element
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'recycleData.json';  // File name for download
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
 
