@@ -8,7 +8,6 @@
 The Recycle Disciple empowers individuals to reduce plastic waste by simplifying the recycling process. By helping users recognize plastic types and track their environmental impact, the app contributes to the United Nations Sustainable Development Goals (SDGs), specifically:
 
 - **SDG 12: Responsible Consumption and Production**
-- **SDG 13: Climate Action**
 
 ## ✨ Features
 
@@ -23,7 +22,7 @@ The Recycle Disciple empowers individuals to reduce plastic waste by simplifying
 
 ## 🔓 Open Source
 
-This project is released under the [MIT License](LICENSE). Contributions are welcome!
+This project is released under [CC BY-NC 4.0](LICENSE).
 
 ## 💾 Data Privacy
 
@@ -36,7 +35,7 @@ View the full [Privacy Policy](https://farukia.github.io/privacy.html).
 ## 💡 Tech Stack
 
 - Frontend: HTML5, JavaScript, MIT App Inventor
-- Image Recognition: TensorFlow.js / custom ML model
+- Image Recognition: TensorFlow.js, Google's Teachable Machine
 - Local Storage: Browser/Device memory (no cloud or external server required)
 
 ## 🧠 How It Works
@@ -48,3 +47,15 @@ View the full [Privacy Policy](https://farukia.github.io/privacy.html).
 
 ## 📦 Use
 Use on the web @ https://farukia.github.io/recyclable or download on Android (coming to Google Play soon!)
+
+## Ownership Declaration
+
+All source code in this repository was authored by Ayesha Faruki and is original work, unless otherwise noted.
+
+The machine learning model used in this project was trained using Google’s Teachable Machine with custom data collected and labeled by the author. The exported model is used under the terms of service of Teachable Machine (https://teachablemachine.withgoogle.com/terms), and no proprietary Google code or libraries are redistributed in this repository.
+
+All datasets, images, or training files used to build the model were either created or sourced by the author or are from the [Kaggle Dataset](https://www.kaggle.com/datasets/piaoya/plastic-recycling-codes), which uses a CC BY-NC 4.0 license. 
+
+Author: Ayesha Faruki
+Date: May 2025
+
