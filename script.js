@@ -44,7 +44,8 @@
 
     document.getElementById("loader").style.display = "none";
 
-    webcam = new tmImage.Webcam(200, 200, false);
+    var webWidth = window.innerWidth;
+    webcam = new tmImage.Webcam(webWidth, 400, false);
     await webcam.setup({ facingMode: "environment" });
     await webcam.play();
 

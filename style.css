@@ -1,7 +1,9 @@
+@import ('~lucide-static/font/Lucide.css');
+
 body {
-  background-color: #F9FAF8;
+  background-color: #F5F5F5;
   color: #1C1C1C;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
   line-height: 1.6;
@@ -11,10 +13,40 @@ html {
   margin-top: 0;
 }
 
+h1 {
+  align-self: stretch; 
+  color: var(--Text-Default-Default, #1E1E1E); 
+  font-size: 48px;
+  font-family: Inter;
+  font-weight: 700;
+  line-height: 57.60px;
+  word-wrap: break-word"
+}
+
+h2 {
+  align-self: stretch; 
+  justify-content: center; 
+  display: flex; 
+  flex-direction: column; 
+  color: var(--Text-Default-Secondary, #757575); 
+  font-size: 32px; 
+  font-family: Inter; 
+  font-weight: 400; 
+  line-height: 38.40px; 
+  word-wrap: break-word
+}
+
+.camera-container {
+  background-color: #444444;
+  padding: 50px;
+}
+
+
 .navbar {
-  background-color: #2F6F4E;
+  background-color: white;
+  /**#2F6F4E;**/
   padding: 1rem 2rem;
-  color: white;
+  color: #757575;
   font-weight: 600;
   font-size: 1.1rem;
   position: fixed;
@@ -46,7 +78,8 @@ html {
 .title {
   text-align: center;
   font-size: 3.5rem;
-  color: #2F6F4E;
+  color: black;
+  /*#2F6F4E;*/
   margin: 3rem 0 1rem;
 }
 
@@ -59,9 +92,10 @@ html {
 }
 
 .top {
-  background-color: #2F6F4E;
+  background-color: white; 
+  /*#2F6F4E;*/
   margin-top: 0;
-  color: #F9FAF8;
+  color: #757575;
   padding: 0.75rem 1.5rem;
   margin: 0;
 }
@@ -78,7 +112,8 @@ html {
   .progress-bar {
     height: 30px;
     width: 0%;
-    background-color: #2F6F4E;
+    background-color:black;
+    /* #2F6F4E; */
     border-radius: 25px 0 0 25px;
     text-align: center;
     color: white;
@@ -99,7 +134,8 @@ html {
   }
 
 button {
-  background-color: #2F6F4E;
+  background-color: #2C2C2C;
+  /*#2F6F4E;*/
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -110,10 +146,15 @@ button {
   margin: 0.5rem;
   display:block;
   margin: 10px auto;
+  font-family:'Inter', sans-serif;
+}
+
+.navbar i {
+  color: black;
 }
 
 button:hover {
-  background-color: #234837;
+  background-color: #0f0f0f;
 }
 
 #webcam-container {

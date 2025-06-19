@@ -8,7 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>-->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!--<link rel= "stylesheet" href= "https://maxst.icons8.com/vue-static/landings/line-awesome/font-awesome-line-awesome/css/all.min.css" >-->
   </head>
   
 <!-- Google tag (gtag.js) -->
@@ -25,29 +27,36 @@
     <script src="script.js"></script>
 
     <div class="top">
-      <h1> Scan a Plastic Item</h1>
+    <h2>The Recycle Disciple</h2>
     </div>
 
     <div class="navbar" id="myNavbar">
-      <a href="index.html"><i class="fa fa-home"></i></a>
-      <a href="learn.html"><i class="fa fa-info"></i></a>
-      <a href="profile.html"><i class="fa fa-user"></i></a>
+      <a href="index.html"><i data-lucide="home"></i></a>
+      <a href="learn.html"><i data-lucide="info"></i></a>
+      <a href="profile.html"><i data-lucide="user"></i></a>
     </div>
 
     <div class="loader" id="loader"></div>
 
-<div style="margin:50px; padding: 40px;">
-    <div class="container">
-      <b><button type="button" onclick="init()">Start</button></b>
+    <div class="container" style="margin:50px; padding: 40px">
+      <h1>Welcome!</h1>
+      <h2>How will you help the environment today?</h2>
+      </div>
+      <div id="status" style="text-align: center; font-size: 20px; color: hsl(0, 0%, 20%);"></div>
+      <div class="camera-container">
+     <button class="round" onclick="init()" style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+  Start
+  <i data-lucide="camera" style="font-size: 20px; color: white;"></i>
+</button>
       <div style="display: flex; justify-content: center; margin-top: 10px;">
         <button id="capture-btn" type="button" onclick="captureImage()" style="display: none;">Capture Image</button>
       </div>
       <div id="didyk" style="display: none; justify-content: center; gap: 20px; margin-top: 10px; text-align: center;">
         <p> Did you recycle this item?</p>
-      <b><button class="round" onclick="addRecycle()"><i class="fa fa-check"></i></button></b>
-      <b><button class="round" onclick="noRecycle()"><i class="fa fa-x"></i></button></b>
+      <b><button class="round" onclick="addRecycle()"><i data-lucide="check"></i></button></b>
+      <b><button class="round" onclick="noRecycle()"><i data-lucide="x"></i></button></b>
       </div>
-    </div>
+ 
 
     <div id="webcam-container"></div>
     <div id="label-container"></div>
@@ -56,6 +65,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+  </script>
   </body>
 </html>
